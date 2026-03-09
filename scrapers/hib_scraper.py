@@ -127,7 +127,7 @@ class HibScraper(Scraper):
 
     def _scrape_entries(self, parameters: _EntryParameters, progress: Progress) -> List[_Entry]:
         entries = self._scrape_entries_with_url(self._URL, parameters, progress)
-        entries.extend(self._scrape_entries_with_url(self._ARCIVE_URL, parameters, progress))
+        # entries.extend(self._scrape_entries_with_url(self._ARCIVE_URL, parameters, progress))
         return entries
 
     def _scrape_articles(self, entries: List[_Entry], progress: Progress) -> List[Article]:
