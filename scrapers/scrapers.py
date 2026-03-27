@@ -12,6 +12,7 @@ from scrapers.bmds_scraper import BmdsScraper
 from scrapers.bmi_scraper import BmiScraper
 from scrapers.bmwe_scraper import BmweScraper
 from scrapers.bmas_scraper import BmasScraper
+from scrapers.breg_scraper import BregScraper
 
 
 ALL_SCRAPERS: Dict[str, Scraper] = {
@@ -26,5 +27,6 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "BMDS": BmdsScraper(),
     "BMI": BmiScraper(),
     "BMWE": BmweScraper(),
-    "BMAS": BmasScraper()
+    "BMAS": BmasScraper(),
+    "BREG": BregScraper()
 }
