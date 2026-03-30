@@ -16,6 +16,8 @@ class BmfScraper(Scraper):
 
     def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
         html_text = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+        if html_text is None:
+            return []
         soup = BeautifulSoup(html_text,"html.parser")
         rows = soup.find_all("div",{"class":"bmf-entry"})
         entries = []
