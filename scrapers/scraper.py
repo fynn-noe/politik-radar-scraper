@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from article import Article
 from typing import Dict, List
@@ -40,7 +40,7 @@ class Scraper(ABC):
     ) -> List[Article]:
         return [
             a for a in articles
-            if parameters.start_date <= a.timestamp <= parameters.end_date
+            if parameters.start_date <= a.timestamp < parameters.end_date + timedelta(days=1)
         ]
     
     def _content_to_markdown(self, content) -> str:

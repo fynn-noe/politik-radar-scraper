@@ -19,7 +19,7 @@ class BregScraper(Scraper):
     def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
         page = 1
         entries = []
-        while page < 30: # gerade weil es sonst einfach zu lange dauert. TODO: andere Möglichkeit finden
+        while page < 10: # gerade weil es sonst einfach zu lange dauert. TODO: andere Möglichkeit finden
             url_page = f"{self._URL}?page={page}"
             html_text = self._get(url_page, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
             
@@ -67,7 +67,7 @@ class BregScraper(Scraper):
             main = soup.find("main")
             if main:
                 ps = main.find_all("p")
-                content = "\n\n".join([p.text for p in ps][:2])
+                content = "\n\n".join([p.text for p in ps])
 
                 articles.append(Article(
                     timestamp=timestamp,
