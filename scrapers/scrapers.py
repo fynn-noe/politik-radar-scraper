@@ -18,6 +18,7 @@ from scrapers.bmbfsfj_scraper import BmbfsfjScraper
 from scrapers.bmjv_scraper import BmjvScraper
 from scrapers.bmftr_scraper import BmftrScraper
 from scrapers.bmv_scraper import BmvScraper
+from scrapers.bmukn_scraper import BmuknScraper
 
 ALL_SCRAPERS: Dict[str, Scraper] = {
     "Heute im Bundestag": HibScraper(),
@@ -38,4 +39,5 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "BMJV" : BmjvScraper(),
     "BMFTR": BmftrScraper(),
     "BMV" : BmvScraper(),
+    "BMUKN":BmuknScraper(),
 }
