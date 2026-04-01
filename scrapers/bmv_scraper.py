@@ -31,9 +31,15 @@ class BmvScraper(Scraper):
             soup = BeautifulSoup(html_article,"html.parser")
             title = soup.find("h1",{"class":"headline-title"}).get_text(strip=True)
             main = soup.find("main")
-    
+            figure = soup.find("figure")
+            assert(figure)
+            main = figure.find_next_siblings()
             if main:
-                ps = main.find_all("p")
+                ps =[]
+                for elem in main:
+                    p = elem.find("p") 
+                    if (p is not None):
+                        ps.append(p)
                 content = "\n\n".join([p.text for p in ps])
                 datestring = soup.find("p",{"class":"number"}).get_text(strip=True)
                 timestamp = datetime.strptime(datestring,"%d.%m.%Y")
