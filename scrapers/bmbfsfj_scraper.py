@@ -33,19 +33,15 @@ class BmbfsfjScraper(Scraper):
             soup = BeautifulSoup(html_article,"html.parser")
             title = soup.find("title").get_text(strip=True)
             timestamp = datetime.fromisoformat(soup.find("time").get("datetime"))
-            main = soup.find("main")
-            if main:
-                ps = main.find_all("p")
-                content = "\n\n".join([p.text for p in ps])
-
-                articles.append(Article(
-                    timestamp=timestamp,
-                    title=title,
-                    medium_organisation=self.SOURCE,
-                    content=content,
-                    link=link, 
-                    source=self.SOURCE
-                ))
+            content = soup.find("p",{"class":"article-teaser"}).get_text(strip=True)
+            articles.append(Article(
+                timestamp=timestamp,
+                title=title,
+                medium_organisation=self.SOURCE,
+                content=content,
+                link=link, 
+                source=self.SOURCE
+            ))
 
         return self._filter_dates(articles, parameters)
 
