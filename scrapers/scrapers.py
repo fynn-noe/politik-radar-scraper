@@ -3,6 +3,7 @@ from typing import Dict
 from scrapers.hib_scraper import HibScraper
 from scrapers.nkr_scraper import NkrScraper
 from scrapers.bfdi_scraper import BfdiScraper
+from scrapers.bfdi_rss_scraper import BfdiRssScraper
 from scrapers.bva_scraper import BvaScraper
 from scrapers.dsc_scraper import DscScraper
 from scrapers.bsi_scraper import BsiScraper
@@ -10,11 +11,15 @@ from scrapers.bna_scraper import BnaScraper
 from scrapers.diw_scraper import DiwScraper
 from scrapers.bmds_scraper import BmdsScraper
 from scrapers.bmi_scraper import BmiScraper
+from scrapers.bmi_scraper import BmiScraper
 from scrapers.bmwe_scraper import BmweScraper
 from scrapers.bmas_scraper import BmasScraper
+from scrapers.bmas_rss_scraper import BmasRssScraper
 from scrapers.breg_scraper import BregScraper
 from scrapers.bmf_scraper import BmfScraper
+from scrapers.bmf_rss_scraper import BmfRssScraper
 from scrapers.bmbfsfj_scraper import BmbfsfjScraper
+from scrapers.bmbfsfj_rss_scraper import BmbfsfjRssScraper
 from scrapers.bmjv_scraper import BmjvScraper
 from scrapers.bmftr_scraper import BmftrScraper
 from scrapers.bmv_scraper import BmvScraper
@@ -30,7 +35,7 @@ from scrapers.aa_scraper import AaScraper
 ALL_SCRAPERS: Dict[str, Scraper] = {
     "Heute im Bundestag": HibScraper(),
     "Normenkontrollrat": NkrScraper(),
-    "BfDI": BfdiScraper(),
+    "BfDI": BfdiRssScraper(),
     "BVA": BvaScraper(),
     "DSC": DscScraper(),
     "BSI": BsiScraper(),
@@ -39,10 +44,10 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "BMDS": BmdsScraper(),
     "BMI": BmiScraper(),
     "BMWE": BmweScraper(),
-    "BMAS": BmasScraper(),
+    "BMAS": BmasRssScraper(),
     "BREG": BregScraper(),
-    "BMF": BmfScraper(),
-    "BMBFSFJ" :BmbfsfjScraper(),
+    "BMF": BmfRssScraper(),
+    "BMBFSFJ" :BmbfsfjRssScraper(),
     "BMJV" : BmjvScraper(),
     "BMFTR": BmftrScraper(),
     "BMV" : BmvScraper(),
