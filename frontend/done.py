@@ -61,7 +61,7 @@ def done():
 
     article_accumulator = ArticleAccumulator()
     
-    df, bool_columns = article_accumulator.to_dataframe(filter_result, keywords, True)
+    df, bool_columns, df_keywords = article_accumulator.to_dataframe(filter_result, keywords, True)
     df["select"] = df[bool_columns].any(axis=1).astype(bool)
     base_columns = [
         "select",
@@ -72,6 +72,7 @@ def done():
         "link",
         "source"
     ]
+    df["Stichwörter"] = df_keywords
 
     other_columns = [col for col in df.columns if col not in base_columns]
 
@@ -119,7 +120,7 @@ def done():
 
     selected_df = edited_df[edited_df["select"]].drop("select", axis=1)
 
-    options = ["Metadaten", "Match-Ergebnisse"]
+    options = ["Metadaten", "Match-Ergebnisse","Stichwort-Spalte"]
     selection = st.segmented_control(
         "Zu Datei hinzufügen",
         options=options,
@@ -128,6 +129,7 @@ def done():
     )
     add_metadata = options[0] in selection
     add_match_results = options[1] in selection
+    add_keywords = options[2] in selection
 
     serializer = DataframeSerializer()
 
@@ -138,7 +140,8 @@ def done():
                 selected_df, 
                 metadata,
                 add_metadata,
-                add_match_results
+                add_match_results,
+                add_keywords
             ),
             file_name="data.csv",
             mime="text/csv",
@@ -151,7 +154,8 @@ def done():
                 selected_df, 
                 metadata,
                 add_metadata,
-                add_match_results
+                add_match_results,
+                add_keywords
             ),
             file_name="data.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

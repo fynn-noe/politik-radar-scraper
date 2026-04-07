@@ -72,5 +72,22 @@ class ArticleAccumulator:
         # Concatenate all new columns at once
         df = pd.concat([df, pd.DataFrame(new_columns)], axis=1)
 
-        return df, bool_columns
+        # alle Stichwörter in eine Spalte, weil der politik.radar die so braucht
+
+        keyword_to_columns = {}
+
+        for kw in keywords:
+            prefix = f"{kw}"
+            cols = [col for col in bool_columns if col.startswith(prefix)]
+            keyword_to_columns[kw] = cols
+
+        def extract_keywords(row):
+            matched_keywords = []
+            for kw, cols in keyword_to_columns.items():
+                if any(row[col] for col in cols if col in row):
+                    matched_keywords.append(kw)
+            return matched_keywords
+
+        df_keywords= df.apply(extract_keywords, axis=1)
+        return df, bool_columns, df_keywords
     

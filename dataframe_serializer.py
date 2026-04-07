@@ -28,11 +28,23 @@ class DataframeSerializer:
 # Ähnlichkeitsgrenzwert: {self.cos_threshold or 'NA'}
 """.strip()
 
-    def to_csv(self, df: pd.DataFrame, metadata: Metadata, add_metadata: bool, add_results: bool) -> str:
+    def to_csv(self, df: pd.DataFrame, metadata: Metadata, add_metadata: bool, add_results: bool, add_keywords: bool) -> str:
         df_ = df.copy()
-        if not add_results:
-            df_ = df_[self.NO_RESULT_COLUMNS]
-        
+
+        cols = self.NO_RESULT_COLUMNS.copy()
+
+        if add_results:
+            result_cols = [col for col in df_.columns if col not in self.NO_RESULT_COLUMNS and col != "Stichwörter"]
+            cols.extend(result_cols)
+
+        if add_keywords and "Stichwörter" in df_.columns:
+            cols.append("Stichwörter")
+
+        df_ = df_[cols]
+        if "Stichwörter" in df_.columns:
+            df_["Stichwörter"] = df_["Stichwörter"].apply(
+                lambda x: ", ".join(x) if isinstance(x, list) else x
+            )
         io = StringIO()
         df_.to_csv(io, index=False)
         csv_string = io.getvalue()
@@ -42,11 +54,22 @@ class DataframeSerializer:
 
         return csv_string
 
-    def to_xlsx(self, df: pd.DataFrame , metadata: Metadata, add_metadata: bool, add_results: bool) -> bytes:
+    def to_xlsx(self, df: pd.DataFrame , metadata: Metadata, add_metadata: bool, add_results: bool, add_keywords: bool) -> bytes:
         df_ = df.copy()
-        if not add_results:
-            df_ = df_[self.NO_RESULT_COLUMNS]
-        
+        cols = self.NO_RESULT_COLUMNS.copy()
+
+        if add_results:
+            result_cols = [col for col in df_.columns if col not in self.NO_RESULT_COLUMNS and col != "Stichwörter"]
+            cols.extend(result_cols)
+
+        if add_keywords and "Stichwörter" in df_.columns:
+            cols.append("Stichwörter")
+
+        df_ = df_[cols]
+        if "Stichwörter" in df_.columns:
+            df_["Stichwörter"] = df_["Stichwörter"].apply(
+                lambda x: ", ".join(x) if isinstance(x, list) else x
+            )
         io = BytesIO()
         with pd.ExcelWriter(io, engine="openpyxl") as writer:
             for source in df_["source"].unique():
