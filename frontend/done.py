@@ -63,8 +63,19 @@ def done():
     
     df, bool_columns = article_accumulator.to_dataframe(filter_result, keywords, True)
     df["select"] = df[bool_columns].any(axis=1).astype(bool)
-    ordered_columns = ["select"] + [col for col in df.columns if col != "select"]
-    df = df[ordered_columns]
+    base_columns = [
+        "select",
+        "timestamp",
+        "medium_organisation",
+        "title",
+        "content",
+        "link",
+        "source"
+    ]
+
+    other_columns = [col for col in df.columns if col not in base_columns]
+
+    df = df[base_columns + other_columns]
 
     st.write("Ergebnisse")
     edited_df = st.data_editor(
@@ -74,8 +85,8 @@ def done():
         column_config={
             "select": st.column_config.CheckboxColumn("Auswählen"),
             "timestamp": st.column_config.TextColumn("Datum", disabled=True),
-            "title": st.column_config.TextColumn("Titel", disabled=True),
             "medium_organisation": st.column_config.TextColumn("Medium/Organisation", disabled=True),
+            "title": st.column_config.TextColumn("Titel", disabled=True),
             "content": st.column_config.TextColumn("Text", disabled=True),
             "link": st.column_config.LinkColumn("Link", disabled=True),
             "source": st.column_config.TextColumn("Quelle", disabled=True)

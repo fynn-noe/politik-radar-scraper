@@ -14,8 +14,8 @@ class ArticleAccumulator:
         df: pd.DataFrame = pd.DataFrame([{
             "__SORTER__": a.timestamp,
             "timestamp": a.timestamp.strftime("%d.%m.%Y"),
-            "title": a.title,
             "medium_organisation": a.medium_organisation,
+            "title": a.title,
             "content": a.content,
             "link": a.link,
             "source": a.source
