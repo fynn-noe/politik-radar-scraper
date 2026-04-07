@@ -121,6 +121,12 @@ def _start_workload(
 
 
 def idle():
+    col1, col2 = st.columns([1, 40])  
+    with col1:
+        st.image("img/icon-funk.JPG", width=50)
+
+    with col2:
+        st.title("politik.radar Scraper")
     keyword_options = get_keywords()
     keywords = st.multiselect(
         label="Schlagwörter",
