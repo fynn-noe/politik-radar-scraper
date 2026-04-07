@@ -10,8 +10,9 @@ from dateutil import parser
 import feedparser
 def scrape_rss(URL, source, datestring, progress: Progress):
     feed = feedparser.parse(URL)
+    articles = []
+    #print(feed)
     if feed.status == 200:
-        articles = []
         for entry in progress.start_iteration(feed.entries, len(feed.entries), f"Scraping {source}..."):
             soup = BeautifulSoup(entry.description, "html.parser")
             content = soup.get_text()
