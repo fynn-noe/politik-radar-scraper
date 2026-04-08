@@ -40,6 +40,10 @@ from scrapers.bmleh_scraper import BmlehScraper
 from scrapers.bmz_scraper import BmzScraper
 from scrapers.bmwsb_scraper import BmwsbScraper
 from scrapers.aa_scraper import AaScraper
+from scrapers.netzpolitik_rss_scraper import NetzpolitikRssScraper
+from scrapers.heise_rss_scraper import HeiseRssScraper
+from scrapers.eu_parlament_rss_scraper import EuParlamentRssScraper
+
 
 ALL_SCRAPERS: Dict[str, Scraper] = {
     "Heute im Bundestag": HibRssScraper(),
@@ -68,4 +72,7 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "BMZ":BmzScraper(),
     "BMWSB":BmwsbScraper(),
     "AA":AaScraper(),
+    "Netzpolitik":NetzpolitikRssScraper(),
+    "Heise":HeiseRssScraper(),
+    "EU Parlament":EuParlamentRssScraper()
 }
