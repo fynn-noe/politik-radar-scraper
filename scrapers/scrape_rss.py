@@ -10,9 +10,11 @@ from dateutil import parser
 import feedparser
 def scrape_rss(URL, source, datestring, progress: Progress):
     feed = feedparser.parse(URL)
+    print(URL)
+    print(feed)
     articles = []
     #print(feed)
-    if feed.status == 200:
+    if feed and hasattr(feed, "entries"):
         for entry in progress.start_iteration(feed.entries, len(feed.entries), f"Scraping {source}..."):
             soup = BeautifulSoup(entry.description, "html.parser")
             content = soup.get_text()
@@ -21,8 +23,7 @@ def scrape_rss(URL, source, datestring, progress: Progress):
             except:
                 source_res = source
             articles.append(Article(
-                # ACHTUNG: NICHT TIMEZONE AWARE (DATUM KÖNNTE NICHT DAS RICHTIGE SEIN)
-                timestamp=parser.parse(entry.published, ignoretz=True),
+                timestamp=parser.parse(entry.published),
                 title=entry.title,
                 medium_organisation=source,
                 content=content,
