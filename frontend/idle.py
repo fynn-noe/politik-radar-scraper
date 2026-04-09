@@ -141,7 +141,7 @@ def source_select(options,name):
 def idle():
     col1, col2 = st.columns([1, 40])
     with col1:
-        st.image("img/icon-funk.JPG", width=50)
+        st.image("img/funk.png")
 
     with col2:
         st.title("politik.radar Scraper")
