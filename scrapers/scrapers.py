@@ -45,6 +45,7 @@ from scrapers.heise_rss_scraper import HeiseRssScraper
 from scrapers.eu_parlament_rss_scraper import EuParlamentRssScraper
 
 
+
 ALL_SCRAPERS: Dict[str, Scraper] = {
     "Heute im Bundestag": HibRssScraper(),
     "Normenkontrollrat": NkrScraper(),
@@ -76,3 +77,46 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "Heise": HeiseRssScraper(),
     "EU Parlament": EuParlamentRssScraper(),
 }
+
+BUNDESMINISTERIEN = [
+    "BMDS",
+    "BMI",
+    "BMWE",
+    "BMAS",
+    "BMF",
+    "BMBFSFJ",
+    "BMJV",
+    "BMFTR",
+    "BMV",
+    "BMUKN",
+    "BMVG",
+    "BMG",
+    "BMLEH",
+    "BMZ",
+    "BMWSB",
+    "AA"
+]
+
+PRESSEORGANE = [
+    "Google News",
+    "Netzpolitik",
+    "Heise"
+]
+
+SONSTIGE_INSTUTIONEN = [
+    "Normenkontrollrat",
+    "BVA",
+    "DSC",
+    "BSI",
+    "BNA",
+    "DIW"
+]
+
+BUNDESTAG= [
+    "Heute im Bundestag",
+    "BREG"
+]
+
+EUROPA_INTERNATIONAL = [
+    "EU Parlament"
+]
