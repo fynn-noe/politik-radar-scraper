@@ -17,7 +17,10 @@ def scrape_rss(URL, source, datestring, progress: Progress):
         ):
             soup = BeautifulSoup(entry.description, "html.parser")
             content = soup.get_text()
-            source_res = entry.source.get("title") or source
+            try:
+                source_res = entry.source["title"]
+            except (AttributeError, KeyError):
+                source_res = source
             articles.append(
                 Article(
                     timestamp=parser.parse(entry.published),

@@ -99,7 +99,7 @@ class ArticleAccumulator:
                     matched_keywords.append(kw)
             return matched_keywords
 
-        df_keywords = df.apply(extract_keywords, axis=1)
+        df_keywords = df.apply(extract_keywords, axis=1).to_frame()
         assert isinstance(df_keywords, pd.DataFrame)
 
         return df, bool_columns, df_keywords
