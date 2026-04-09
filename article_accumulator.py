@@ -7,7 +7,7 @@ import numpy as np
 class ArticleAccumulator:
 
     def to_dataframe(
-        self, filter_result: MatchFilter.Result, keywords: List[str], add_results: bool
+        self, filter_result: MatchFilter.Result, keywords: List[str]
     ) -> Tuple[pd.DataFrame, List[str], pd.DataFrame]:
         articles = filter_result.articles
         m = filter_result.matcher_result
@@ -32,9 +32,6 @@ class ArticleAccumulator:
             df = df.sort_values(by="timestamp")
 
         df = df.drop("__SORTER__", axis=1)
-
-        if not add_results:
-            return df, []  # TODO
 
         # Helper to fetch a match matrix (keywords × articles)
         # If a submatcher is disabled: return all False

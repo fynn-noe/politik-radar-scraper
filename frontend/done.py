@@ -59,7 +59,7 @@ def done():
     article_accumulator = ArticleAccumulator()
 
     df, bool_columns, df_keywords = article_accumulator.to_dataframe(
-        filter_result, keywords, True
+        filter_result, keywords
     )
     df["select"] = df[bool_columns].any(axis=1).astype(bool)
     base_columns = [
