@@ -3,7 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
 from bs4.element import Tag
 from progress import Progress
 
@@ -16,32 +16,42 @@ class BmbfsfjScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
-        html_text = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
+        html_text = self._get(
+            self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+        )
         if html_text is None:
             return []
 
         soup = BeautifulSoup(html_text, "html.parser")
 
-        rows = soup.find_all("a",{"class":"text-link"})
+        rows = soup.find_all("a", {"class": "text-link"})
         links = []
         for row in rows:
-            links.append(f"{self._URL_PREFIX}{row.get("href")}")
+            links.append(f"{self._URL_PREFIX}{row.get('href')}")
         articles = []
-        for link in progress.start_iteration(links, len(links), "Scraping bmbfsfj articles..."):
-            html_article = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
-            soup = BeautifulSoup(html_article,"html.parser")
+        for link in progress.start_iteration(
+            links, len(links), "Scraping bmbfsfj articles..."
+        ):
+            html_article = self._get(
+                link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+            )
+            soup = BeautifulSoup(html_article, "html.parser")
             title = soup.find("title").get_text(strip=True)
             timestamp = datetime.fromisoformat(soup.find("time").get("datetime"))
-            content = soup.find("p",{"class":"article-teaser"}).get_text(strip=True)
-            articles.append(Article(
-                timestamp=timestamp,
-                title=title,
-                medium_organisation=self.SOURCE,
-                content=content,
-                link=link, 
-                source=self.SOURCE
-            ))
+            content = soup.find("p", {"class": "article-teaser"}).get_text(strip=True)
+            articles.append(
+                Article(
+                    timestamp=timestamp,
+                    title=title,
+                    medium_organisation=self.SOURCE,
+                    content=content,
+                    link=link,
+                    source=self.SOURCE,
+                )
+            )
 
         return self._filter_dates(articles, parameters)
 
@@ -60,5 +70,5 @@ class BmbfsfjScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]
