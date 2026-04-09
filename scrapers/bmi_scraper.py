@@ -3,8 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
-from bs4.element import Tag
+from bs4 import BeautifulSoup
 from progress import Progress
 
 
@@ -16,8 +15,12 @@ class BmiScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
-        html = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
+        html = self._get(
+            self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+        )
         if html is None:
             return []
 
@@ -29,7 +32,9 @@ class BmiScraper(Scraper):
 
         articles = []
         for li in progress.start_iteration(lis, len(lis), "Scraping BMI articles..."):
-            type_span = li.find("span", class_="c-search-teaser__span c-search-teaser__type")
+            type_span = li.find(
+                "span", class_="c-search-teaser__span c-search-teaser__type"
+            )
             assert type_span
             type_string = str(type_span.text).lower()
             if type_string == "download":
@@ -43,13 +48,19 @@ class BmiScraper(Scraper):
             assert title_span
             title = str(title_span.text).strip()
 
-            date_span = li.find("span", class_="c-search-teaser__span c-search-teaser__date")
+            date_span = li.find(
+                "span", class_="c-search-teaser__span c-search-teaser__date"
+            )
             assert date_span
             date_string = date_span.text
             day, month, year = [int(x) for x in date_string.split(".")]
             timestamp = datetime(day=day, month=month, year=year)
 
-            sub_html = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}")
+            sub_html = self._get(
+                link,
+                progress,
+                f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}",
+            )
             if sub_html is None:
                 return []
 
@@ -70,14 +81,16 @@ class BmiScraper(Scraper):
             print(f"{title=}", flush=True)
             print(f"{content=}", flush=True)
 
-            articles.append(Article(
-                timestamp=timestamp,
-                title=title,
-                medium_organisation=self.SOURCE,
-                content=content,
-                link=link, 
-                source=self.SOURCE
-            ))
+            articles.append(
+                Article(
+                    timestamp=timestamp,
+                    title=title,
+                    medium_organisation=self.SOURCE,
+                    content=content,
+                    link=link,
+                    source=self.SOURCE,
+                )
+            )
 
         return self._filter_dates(articles, parameters)
 
@@ -96,5 +109,5 @@ class BmiScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]

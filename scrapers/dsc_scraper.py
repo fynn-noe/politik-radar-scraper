@@ -3,7 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
 from bs4.element import Tag
 from progress import Progress
 
@@ -16,8 +16,12 @@ class DscScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
-        html = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
+        html = self._get(
+            self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+        )
         if html is None:
             return []
 
@@ -27,7 +31,7 @@ class DscScraper(Scraper):
         assert body_text
 
         h2 = body_text.find("h2", string="Pressemitteilungen")  # type: ignore
-        #assert h2 TODO: checken, warum dieses assert eine Fehlermeldung wirft
+        # assert h2 TODO: checken, warum dieses assert eine Fehlermeldung wirft
         articles = []
         if h2:
 
@@ -57,11 +61,17 @@ class DscScraper(Scraper):
                     break
 
             articles = []
-            for title, link, timestamp in progress.start_iteration(entries, total=len(entries), desc="Scraping DSC articles"):
-                html = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}")
+            for title, link, timestamp in progress.start_iteration(
+                entries, total=len(entries), desc="Scraping DSC articles"
+            ):
+                html = self._get(
+                    link,
+                    progress,
+                    f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}",
+                )
                 if html is None:
                     return []
-                
+
                 soup = BeautifulSoup(html, "html.parser")
 
                 div = soup.find("div", class_="wrapperText")
@@ -71,14 +81,16 @@ class DscScraper(Scraper):
                 assert ps
                 content = "\n\n".join([p.text.strip() for p in ps][0])
 
-                articles.append(Article(
-                    timestamp=timestamp,
-                    title=title,
-                    medium_organisation=self.SOURCE,
-                    content=content,
-                    link=link, 
-                    source=self.SOURCE
-                ))
+                articles.append(
+                    Article(
+                        timestamp=timestamp,
+                        title=title,
+                        medium_organisation=self.SOURCE,
+                        content=content,
+                        link=link,
+                        source=self.SOURCE,
+                    )
+                )
 
         return self._filter_dates(articles, parameters)
 
@@ -97,5 +109,5 @@ class DscScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]

@@ -3,7 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
 from progress import Progress
 
 
@@ -15,8 +15,12 @@ class NkrScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
-        html = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
+        html = self._get(
+            self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+        )
         if html is None:
             return []
 
@@ -26,10 +30,12 @@ class NkrScraper(Scraper):
         assert generic_table is not None
 
         entries = generic_table.find_all("div", class_="small-12 large-4 column")
-        #assert entries TODO: checken, warum dieses assert eine Fehlermeldung wirft
+        # assert entries TODO: checken, warum dieses assert eine Fehlermeldung wirft
 
         articles = []
-        for entry in progress.start_iteration(entries, total=len(entries), desc="Scraping NKR articles"):
+        for entry in progress.start_iteration(
+            entries, total=len(entries), desc="Scraping NKR articles"
+        ):
             link_a = entry.find("a", class_="c-teaser__link")
             title_h3 = entry.find("h3", class_="c-teaser__headline")
             content_p = entry.find_next("p", class_=False)
@@ -50,19 +56,23 @@ class NkrScraper(Scraper):
             month = self._GERMAN_MONTHS.index(month)
             year = int(year)
 
-            articles.append(Article(
-                datetime(year=year, month=month, day=day),
-                title=title,
-                medium_organisation=self.SOURCE,
-                content=content,
-                link=link, 
-                source=self.SOURCE
-            ))
+            articles.append(
+                Article(
+                    datetime(year=year, month=month, day=day),
+                    title=title,
+                    medium_organisation=self.SOURCE,
+                    content=content,
+                    link=link,
+                    source=self.SOURCE,
+                )
+            )
 
         return self._filter_dates(articles, parameters)
 
     _URL_PREFIX: str = "https://www.normenkontrollrat.bund.de/"
-    _URL: str = f"{_URL_PREFIX}Webs/NKR/DE/veroeffentlichungen/Presse/pressemitteilungen_node.html"
+    _URL: str = (
+        f"{_URL_PREFIX}Webs/NKR/DE/veroeffentlichungen/Presse/pressemitteilungen_node.html"
+    )
     _GERMAN_MONTHS: List[str] = [
         "",
         "Januar",
@@ -76,5 +86,5 @@ class NkrScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]

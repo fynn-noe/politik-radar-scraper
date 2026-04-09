@@ -4,7 +4,6 @@ from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
 from bs4 import BeautifulSoup
-from bs4.element import Tag
 from progress import Progress
 
 
@@ -38,10 +37,19 @@ class BmbfsfjScraper(Scraper):
             html_article = self._get(
                 link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
             )
+            assert html_article
             soup = BeautifulSoup(html_article, "html.parser")
-            title = soup.find("title").get_text(strip=True)
-            timestamp = datetime.fromisoformat(soup.find("time").get("datetime"))
-            content = soup.find("p", {"class": "article-teaser"}).get_text(strip=True)
+            title_tag = soup.find("title")
+            assert title_tag
+            title = title_tag.get_text(strip=True)
+            time_tag = soup.find("time")
+            assert time_tag
+            datetime_string = time_tag.get("datetime")
+            assert isinstance(datetime_string, str)
+            timestamp = datetime.fromisoformat(datetime_string)
+            teaser_p = soup.find("p", class_="article-teaser")
+            assert teaser_p
+            content = teaser_p.get_text(strip=True)
             articles.append(
                 Article(
                     timestamp=timestamp,

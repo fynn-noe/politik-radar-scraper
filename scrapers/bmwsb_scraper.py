@@ -2,9 +2,6 @@ from typing import List
 from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
-from datetime import datetime
-from bs4 import BeautifulSoup 
-from bs4.element import Tag
 from progress import Progress
 from scrapers.scrape_rss import scrape_rss
 
@@ -17,15 +14,18 @@ class BmwsbScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
         datestring = "%a, %d %b %Y %H:%M:%S %z"
-        articles = scrape_rss(self._URL,self.SOURCE,datestring,progress)
+        articles = scrape_rss(self._URL, self.SOURCE, datestring, progress)
 
         return self._filter_dates(articles, parameters)
 
-
     _URL_PREFIX: str = "https://www.bmwsb.bund.de/"
-    _URL: str = f"{_URL_PREFIX}DE/tools-services/rssfeed/_functions/rssnewsfeed.xml?nn=43970"
+    _URL: str = (
+        f"{_URL_PREFIX}DE/tools-services/rssfeed/_functions/rssnewsfeed.xml?nn=43970"
+    )
     _GERMAN_MONTHS: List[str] = [
         "",
         "Januar",
@@ -39,5 +39,5 @@ class BmwsbScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]

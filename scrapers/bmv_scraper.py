@@ -4,7 +4,6 @@ from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
 from bs4 import BeautifulSoup
-from bs4.element import Tag
 from progress import Progress
 
 
@@ -36,8 +35,12 @@ class BmvScraper(Scraper):
             html_article = self._get(
                 link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
             )
+            assert html_article
             soup = BeautifulSoup(html_article, "html.parser")
-            title = soup.find("h1", {"class": "headline-title"}).get_text(strip=True)
+            assert soup
+            h1 = soup.find("h1", {"class": "headline-title"})
+            assert h1
+            title = h1.get_text(strip=True)
             main = soup.find("main")
             figure = soup.find("figure")
             assert figure
@@ -49,7 +52,9 @@ class BmvScraper(Scraper):
                     if p is not None:
                         ps.append(p)
                 content = "\n\n".join([p.text for p in ps])
-                datestring = soup.find("p", {"class": "number"}).get_text(strip=True)
+                date_p = soup.find("p", class_="number")
+                assert date_p
+                datestring = date_p.get_text(strip=True)
                 timestamp = datetime.strptime(datestring, "%d.%m.%Y")
                 articles.append(
                     Article(

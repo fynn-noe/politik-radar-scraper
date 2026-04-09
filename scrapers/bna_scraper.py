@@ -3,8 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
-from bs4.element import Tag
+from bs4 import BeautifulSoup
 from progress import Progress
 
 
@@ -16,8 +15,12 @@ class BnaScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
-        html = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
+        html = self._get(
+            self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+        )
         if html is None:
             return []
 
@@ -29,7 +32,7 @@ class BnaScraper(Scraper):
         assert tbody
 
         trs = tbody.find_all("tr")
-        
+
         articles = []
         for tr in progress.start_iteration(trs, len(trs), "Scraping BNA articles..."):
             tds = tr.find_all("td")
@@ -46,7 +49,11 @@ class BnaScraper(Scraper):
             link = self._URL_PREFIX + a.get("href")
             title = a.text
 
-            sub_html = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}")
+            sub_html = self._get(
+                link,
+                progress,
+                f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}",
+            )
             if sub_html is None:
                 return []
 
@@ -62,17 +69,18 @@ class BnaScraper(Scraper):
 
             content = no_class_ps[0].text
 
-            articles.append(Article(
-                timestamp=timestamp,
-                title=title,
-                medium_organisation=self.SOURCE,
-                content=content,
-                link=link, 
-                source=self.SOURCE
-            ))
+            articles.append(
+                Article(
+                    timestamp=timestamp,
+                    title=title,
+                    medium_organisation=self.SOURCE,
+                    content=content,
+                    link=link,
+                    source=self.SOURCE,
+                )
+            )
 
         return self._filter_dates(articles, parameters)
-
 
     _URL_PREFIX: str = "https://www.bundesnetzagentur.de/"
     _URL: str = f"{_URL_PREFIX}DE/Allgemeines/Presse/Pressemitteilungen/start.html"
@@ -89,5 +97,5 @@ class BnaScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]

@@ -42,55 +42,79 @@ class Matcher:
 
         def all_results(self, n_texts: int, n_keywords: int) -> List[SubMatcher.Result]:
             return [
-                self.exact_result or ExactSubMatcher.Result(
+                self.exact_result
+                or ExactSubMatcher.Result(
                     [[False for _0 in range(n_keywords)] for _1 in range(n_texts)]
                 ),
-                self.stem_result or StemSubMatcher.Result(
+                self.stem_result
+                or StemSubMatcher.Result(
                     [[False for _0 in range(n_keywords)] for _1 in range(n_texts)]
                 ),
-                self.similarity_result or SimilaritySubMatcher.Result(
+                self.similarity_result
+                or SimilaritySubMatcher.Result(
                     [[False for _0 in range(n_keywords) for _1 in range(n_texts)]],
-                    np.empty(shape=(n_texts, n_keywords))
-                )
+                    np.empty(shape=(n_texts, n_keywords)),
+                ),
             ]
-        
+
         def match_mask(self, n_texts: int, n_keywords: int) -> List[bool]:
             results = self.all_results(n_texts, n_keywords)
 
             return [
-                any(result.matches[text_idx][keyword_idx]
+                any(
+                    result.matches[text_idx][keyword_idx]
                     for result in results
-                    for keyword_idx in range(n_keywords))
+                    for keyword_idx in range(n_keywords)
+                )
                 for text_idx in range(n_texts)
             ]
-        
+
         def filter_self(self, n_texts: int, n_keywords: int) -> "Matcher.Result":
             match_mask = self.match_mask(n_texts, n_keywords)
             return Matcher.Result(
-                exact_result=self.exact_result.filter_by_mask(match_mask)  # type: ignore
-                    if self.exact_result else None,
-
-                stem_result=self.stem_result.filter_by_mask(match_mask)  # type: ignore
-                    if self.stem_result else None,
-
-                similarity_result=self.similarity_result.filter_by_mask(match_mask)  # type: ignore
-                    if self.similarity_result else None,
+                exact_result=(
+                    self.exact_result.filter_by_mask(match_mask)  # type: ignore
+                    if self.exact_result
+                    else None
+                ),
+                stem_result=(
+                    self.stem_result.filter_by_mask(match_mask)  # type: ignore
+                    if self.stem_result
+                    else None
+                ),
+                similarity_result=(
+                    self.similarity_result.filter_by_mask(match_mask)  # type: ignore
+                    if self.similarity_result
+                    else None
+                ),
             )
-    
+
     _SUB_MATCHERS: Dict[str, SubMatcher] = {
         "exact": ExactSubMatcher(),
         "stem": StemSubMatcher(),
         "similarity": SimilaritySubMatcher(),
     }
 
-    def match(self, parameters: Parameters, keywords: List[str], texts: List[str], progress: Progress) -> Result:
+    def match(
+        self,
+        parameters: Parameters,
+        keywords: List[str],
+        texts: List[str],
+        progress: Progress,
+    ) -> Result:
         result = self.Result()
 
-        for sub_matcher_key, sub_matcher in progress.start_iteration(self._SUB_MATCHERS.items(), len(self._SUB_MATCHERS.items()), desc="Matching"):
+        for sub_matcher_key, sub_matcher in progress.start_iteration(
+            self._SUB_MATCHERS.items(), len(self._SUB_MATCHERS.items()), desc="Matching"
+        ):
             if SubMatcherType(sub_matcher_key) in parameters.sub_matcher_selection:
-                sub_matcher_parameters = getattr(parameters, f"{sub_matcher_key}_parameters")
+                sub_matcher_parameters = getattr(
+                    parameters, f"{sub_matcher_key}_parameters"
+                )
                 assert sub_matcher_parameters is not None
-                sub_matcher_result = sub_matcher.match(keywords, texts, sub_matcher_parameters)
+                sub_matcher_result = sub_matcher.match(
+                    keywords, texts, sub_matcher_parameters
+                )
                 setattr(result, f"{sub_matcher_key}_result", sub_matcher_result)
 
         return result

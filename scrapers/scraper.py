@@ -20,11 +20,17 @@ class Scraper(ABC):
 
     def __init__subclass__(cls, **_) -> None:  # type: ignore
         super().__init_subclass__()
-        parameters_class = getattr(cls, "Parameters", None) 
+        parameters_class = getattr(cls, "Parameters", None)
         assert isinstance(parameters_class, type)
         assert issubclass(parameters_class, Scraper.Parameters)
 
-    def _get(self, url: str, progress: Progress, error_message: str, parameters: Dict[str, str] | None = None) -> str | None:
+    def _get(
+        self,
+        url: str,
+        progress: Progress,
+        error_message: str,
+        parameters: Dict[str, str] | None = None,
+    ) -> str | None:
         try:
             response = requests.get(url, params=parameters)
             response.raise_for_status()
@@ -35,23 +41,23 @@ class Scraper(ABC):
         return html
 
     def _filter_dates(
-        self, 
-        articles: List[Article], 
-        parameters: Scraper.Parameters
+        self, articles: List[Article], parameters: Scraper.Parameters
     ) -> List[Article]:
         def make_aware(dt, tz):
             if dt.tzinfo is None:
-                return dt.replace(tzinfo=tz)  
-            return dt.astimezone(tz)  
+                return dt.replace(tzinfo=tz)
+            return dt.astimezone(tz)
+
         berlin_tz = ZoneInfo("Europe/Berlin")
 
         start = make_aware(parameters.start_date, berlin_tz)
         end = make_aware(parameters.end_date, berlin_tz)
         return [
-            a for a in articles
-            if start <= make_aware(a.timestamp,berlin_tz) < end + timedelta(days=1)
+            a
+            for a in articles
+            if start <= make_aware(a.timestamp, berlin_tz) < end + timedelta(days=1)
         ]
-    
+
     def _content_to_markdown(self, content) -> str:
         text_parts = []
 
@@ -73,7 +79,8 @@ class Scraper(ABC):
 
         return "".join(text_parts)
 
-
     @abstractmethod
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
         raise NotImplementedError("@abstractmethod")

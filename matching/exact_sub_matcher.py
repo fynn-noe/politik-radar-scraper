@@ -21,11 +21,10 @@ class ExactSubMatcher(SubMatcher):
     def match(self, keywords: List[str], texts: List[str], parameters: Parameters) -> Result:  # type: ignore
         lower_keywords = [keyword.lower() for keyword in keywords]
         lower_texts = [text.lower() for text in texts]
-        
+
         matches = []
         for lower_text in lower_texts:
             matches.append([])
             for lower_keyword in lower_keywords:
                 matches[-1].append(lower_keyword.lower() in lower_text.lower())
         return ExactSubMatcher.Result(matches)
-        

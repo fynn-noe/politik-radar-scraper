@@ -10,7 +10,7 @@ def entry():
 
     if "state" not in st.session_state:
         st.session_state["state"] = "idle"
-    
+
     if "progress" not in st.session_state:
         st.session_state["progress"] = Progress()
 
@@ -21,4 +21,3 @@ def entry():
             running()
         case "done":
             done()
-            

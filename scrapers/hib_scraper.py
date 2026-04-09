@@ -3,7 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
 from progress import Progress
 
 
@@ -15,12 +15,14 @@ class HibScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
         entry_parameters = self._EntryParameters(
             start_date=parameters.start_date,
             end_date=parameters.end_date,
             offset=0,
-            limit=self._LIMIT
+            limit=self._LIMIT,
         )
         entries = self._scrape_entries(entry_parameters, progress)
         articles = self._scrape_articles(entries, progress)
@@ -33,7 +35,9 @@ class HibScraper(Scraper):
     _LIMIT: int = 20
     _MS_PER_S: int = 1_000
     _URL: str = "https://www.bundestag.de/ajax/filterlist/de/presse/hib/454590-454590"
-    _ARCIVE_URL: str = "https://www.bundestag.de/ajax/filterlist/webarchiv/presse/hib/867560-867560"
+    _ARCIVE_URL: str = (
+        "https://www.bundestag.de/ajax/filterlist/webarchiv/presse/hib/867560-867560"
+    )
     _GERMAN_MONTHS: List[str] = [
         "",
         "Januar",
@@ -47,7 +51,7 @@ class HibScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]
 
     @dataclass
@@ -63,13 +67,15 @@ class HibScraper(Scraper):
 
         def to_dict(self) -> Dict[str, str]:
             return {
-                "startdate": str(int(self.start_date.timestamp() * HibScraper._MS_PER_S)),
+                "startdate": str(
+                    int(self.start_date.timestamp() * HibScraper._MS_PER_S)
+                ),
                 "enddate": str(int(self.end_date.timestamp() * HibScraper._MS_PER_S)),
                 "offset": str(self.offset),
                 "limit": str(self.limit),
                 "noFilterSet": str(self.no_filter_set).lower(),
                 "startfield": self.start_field,
-                "endfield": self.end_field
+                "endfield": self.end_field,
             }
 
     @dataclass
@@ -77,8 +83,10 @@ class HibScraper(Scraper):
         title: str
         url: str
         timestamp: datetime
-    
-    def _scrape_entries_with_url(self, url: str, parameters: _EntryParameters, progress: Progress) -> List[_Entry]:
+
+    def _scrape_entries_with_url(
+        self, url: str, parameters: _EntryParameters, progress: Progress
+    ) -> List[_Entry]:
         entry_length = -1
         n_iterations = 0
         entries = []
@@ -88,7 +96,12 @@ class HibScraper(Scraper):
             entry_length = len(entries)
             parameters.offset = n_iterations * self._LIMIT
 
-            html = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}", parameters=parameters.to_dict())
+            html = self._get(
+                self._URL,
+                progress,
+                f"Fehler beim Scrapen der Quelle: {self.SOURCE}",
+                parameters=parameters.to_dict(),
+            )
             if html is None:
                 return []
 
@@ -125,20 +138,30 @@ class HibScraper(Scraper):
 
         return entries
 
-    def _scrape_entries(self, parameters: _EntryParameters, progress: Progress) -> List[_Entry]:
+    def _scrape_entries(
+        self, parameters: _EntryParameters, progress: Progress
+    ) -> List[_Entry]:
         entries = self._scrape_entries_with_url(self._URL, parameters, progress)
         # entries.extend(self._scrape_entries_with_url(self._ARCIVE_URL, parameters, progress))
         return entries
 
-    def _scrape_articles(self, entries: List[_Entry], progress: Progress) -> List[Article]:
+    def _scrape_articles(
+        self, entries: List[_Entry], progress: Progress
+    ) -> List[Article]:
         articles = []
-        for entry in progress.start_iteration(entries, total=len(entries), desc="Scraping 'Heute im Bundestag' Artikel"):
-            html = self._get(entry.url, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel {entry.title}")
+        for entry in progress.start_iteration(
+            entries, total=len(entries), desc="Scraping 'Heute im Bundestag' Artikel"
+        ):
+            html = self._get(
+                entry.url,
+                progress,
+                f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel {entry.title}",
+            )
             if html is None:
                 return []
 
             soup = BeautifulSoup(html, "html.parser")
-            article_div=soup.find("div", class_="bt-artikel__article")
+            article_div = soup.find("div", class_="bt-artikel__article")
             assert article_div is not None
             content = self._content_to_markdown(article_div).strip()
             content = content.split("\n")[0]
@@ -146,16 +169,23 @@ class HibScraper(Scraper):
             header_line = soup.find("span", class_="bt-dachzeile")
             assert header_line is not None
             header_string = header_line.text
-            medium_organisation = header_string.split("—")[0].strip().split(" ")[0].strip().replace(",", "")
+            medium_organisation = (
+                header_string.split("—")[0]
+                .strip()
+                .split(" ")[0]
+                .strip()
+                .replace(",", "")
+            )
 
-            articles.append(Article(
-                timestamp=entry.timestamp,
-                title=entry.title,
-                medium_organisation=medium_organisation,
-                content=content,
-                link=entry.url,
-                source=self.SOURCE
-            ))
+            articles.append(
+                Article(
+                    timestamp=entry.timestamp,
+                    title=entry.title,
+                    medium_organisation=medium_organisation,
+                    content=content,
+                    link=entry.url,
+                    source=self.SOURCE,
+                )
+            )
 
         return articles
-       

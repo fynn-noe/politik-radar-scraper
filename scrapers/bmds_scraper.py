@@ -3,8 +3,7 @@ from article import Article
 from scrapers.scraper import Scraper
 from dataclasses import dataclass
 from datetime import datetime
-from bs4 import BeautifulSoup 
-from bs4.element import Tag
+from bs4 import BeautifulSoup
 from progress import Progress
 
 
@@ -16,8 +15,12 @@ class BmdsScraper(Scraper):
     class Parameters(Scraper.Parameters):
         pass
 
-    def scrape(self, parameters: Scraper.Parameters, progress: Progress) -> List[Article]:
-        html = self._get(self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}")
+    def scrape(
+        self, parameters: Scraper.Parameters, progress: Progress
+    ) -> List[Article]:
+        html = self._get(
+            self._URL, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE}"
+        )
         if html is None:
             return []
 
@@ -38,12 +41,16 @@ class BmdsScraper(Scraper):
             a = li.find("a", class_="stretched-link teaser-link")
             assert a
             link = self._URL_PREFIX + a.get("href")
-            
+
             title_span = a.find("span")
             assert title_span
             title = title_span.text
 
-            sub_html = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}")
+            sub_html = self._get(
+                link,
+                progress,
+                f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}",
+            )
             if sub_html is None:
                 return []
 
@@ -55,17 +62,18 @@ class BmdsScraper(Scraper):
             assert len(ps) > 1
             content = ps[1].text
 
-            articles.append(Article(
-                timestamp=timestamp,
-                title=title,
-                medium_organisation=self.SOURCE,
-                content=content,
-                link=link, 
-                source=self.SOURCE
-            ))
+            articles.append(
+                Article(
+                    timestamp=timestamp,
+                    title=title,
+                    medium_organisation=self.SOURCE,
+                    content=content,
+                    link=link,
+                    source=self.SOURCE,
+                )
+            )
 
         return self._filter_dates(articles, parameters)
-
 
     _URL_PREFIX: str = "https://bmds.bund.de/"
     _URL: str = f"{_URL_PREFIX}aktuelles/pressemitteilungen"
@@ -82,5 +90,5 @@ class BmdsScraper(Scraper):
         "September",
         "Oktober",
         "November",
-        "Dezember"
+        "Dezember",
     ]

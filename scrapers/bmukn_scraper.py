@@ -28,9 +28,17 @@ class BmuknScraper(Scraper):
         entries = []
         for row in rows:
             if row:
-                timestamp = datetime.fromisoformat(row.find("time").get("datetime"))
-                title = row.find("span", {"itemprop": "name"}).get_text(strip=True)
-                link = f"{self._URL_PREFIX}{row.find('a').get('href')}"
+                time_tag = row.find("time")
+                assert time_tag
+                datetime_string = time_tag.get("datetime")
+                assert isinstance(datetime_string, str)
+                timestamp = datetime.fromisoformat(datetime_string)
+                title_span = row.find("span", {"itemprop": "name"})
+                assert title_span
+                title = title_span.get_text(strip=True)
+                link_a = row.find("a")
+                assert link_a
+                link = f"{self._URL_PREFIX}{link_a.get('href')}"
                 entries.append((timestamp, title, link))
         articles = []
         for timestamp, title, link in progress.start_iteration(

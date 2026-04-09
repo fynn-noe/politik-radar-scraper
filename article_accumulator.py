@@ -5,21 +5,28 @@ import numpy as np
 
 
 class ArticleAccumulator:
-    
-    def to_dataframe(self, filter_result: MatchFilter.Result, keywords: List[str], add_results: bool) -> Tuple[pd.DataFrame, List[str]]:
+
+    def to_dataframe(
+        self, filter_result: MatchFilter.Result, keywords: List[str], add_results: bool
+    ) -> Tuple[pd.DataFrame, List[str], pd.DataFrame]:
         articles = filter_result.articles
         m = filter_result.matcher_result
 
         # Base dataframe with article fields
-        df: pd.DataFrame = pd.DataFrame([{
-            "__SORTER__": a.timestamp,
-            "timestamp": a.timestamp.strftime("%d.%m.%Y"),
-            "medium_organisation": a.medium_organisation,
-            "title": a.title,
-            "content": a.content,
-            "link": a.link,
-            "source": a.source
-        } for a in articles])
+        df: pd.DataFrame = pd.DataFrame(
+            [
+                {
+                    "__SORTER__": a.timestamp,
+                    "timestamp": a.timestamp.strftime("%d.%m.%Y"),
+                    "medium_organisation": a.medium_organisation,
+                    "title": a.title,
+                    "content": a.content,
+                    "link": a.link,
+                    "source": a.source,
+                }
+                for a in articles
+            ]
+        )
 
         if len(df):
             df = df.sort_values(by="timestamp")
@@ -27,7 +34,7 @@ class ArticleAccumulator:
         df = df.drop("__SORTER__", axis=1)
 
         if not add_results:
-            return df, []
+            return df, []  # TODO
 
         # Helper to fetch a match matrix (keywords × articles)
         # If a submatcher is disabled: return all False
@@ -40,9 +47,11 @@ class ArticleAccumulator:
         n_articles = len(articles)
 
         # Extract match matrices
-        exact_matches      = get_match_matrix(m.exact_result,     n_keywords, n_articles)
-        stem_matches       = get_match_matrix(m.stem_result,      n_keywords, n_articles)
-        similarity_matches = get_match_matrix(m.similarity_result,n_keywords, n_articles)
+        exact_matches = get_match_matrix(m.exact_result, n_keywords, n_articles)
+        stem_matches = get_match_matrix(m.stem_result, n_keywords, n_articles)
+        similarity_matches = get_match_matrix(
+            m.similarity_result, n_keywords, n_articles
+        )
 
         # Similarities: if embedding off -> zeros
         if m.similarity_result is None:
@@ -65,7 +74,9 @@ class ArticleAccumulator:
                 new_columns[f"{prefix} - stem match"] = stem_matches[:, kw_idx]
                 bool_columns.append(f"{prefix} - stem match")
             if filter_result.matcher_result.similarity_result is not None:
-                new_columns[f"{prefix} - similarity match"] = similarity_matches[:, kw_idx]
+                new_columns[f"{prefix} - similarity match"] = similarity_matches[
+                    :, kw_idx
+                ]
                 new_columns[f"{prefix} - similarity"] = cosine_sims[:, kw_idx]
                 bool_columns.append(f"{prefix} - similarity match")
 
@@ -88,6 +99,7 @@ class ArticleAccumulator:
                     matched_keywords.append(kw)
             return matched_keywords
 
-        df_keywords= df.apply(extract_keywords, axis=1)
+        df_keywords = df.apply(extract_keywords, axis=1)
+        assert isinstance(df_keywords, pd.DataFrame)
+
         return df, bool_columns, df_keywords
-    
