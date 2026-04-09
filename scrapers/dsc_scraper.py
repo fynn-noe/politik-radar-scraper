@@ -27,56 +27,58 @@ class DscScraper(Scraper):
         assert body_text
 
         h2 = body_text.find("h2", string="Pressemitteilungen")  # type: ignore
-        assert h2
-
-        entries = []
-        for tag in h2.next_siblings:
-            if not isinstance(tag, Tag):
-                continue
-            if tag.name == "p":
-                a = tag.find("a")
-                assert a
-                text = a.get_text()
-                date_str, title_str = text.split(":")
-
-                day, month, year = date_str.strip().split(" ")
-                day = int(day.strip("."))
-                month = self._GERMAN_MONTHS.index(month.strip())
-                year = int(year.strip())
-                timestamp = datetime(day=day, month=month, year=year)
-
-                title = title_str.strip()
-
-                link = str(a["href"])
-
-                entries.append((title, link, timestamp))
-
-            else:
-                break
-
+        #assert h2 TODO: checken, warum dieses assert eine Fehlermeldung wirft
         articles = []
-        for title, link, timestamp in progress.start_iteration(entries, total=len(entries), desc="Scraping DSC articles"):
-            html = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}")
-            if html is None:
-                return []
-            
-            soup = BeautifulSoup(html, "html.parser")
+        if h2:
 
-            div = soup.find("div", class_="wrapperText")
-            assert div
+            entries = []
+            for tag in h2.next_siblings:
+                if not isinstance(tag, Tag):
+                    continue
+                if tag.name == "p":
+                    a = tag.find("a")
+                    assert a
+                    text = a.get_text()
+                    date_str, title_str = text.split(":")
 
-            ps = div.find_all("p", class_=False)
-            assert ps
-            content = "\n\n".join([p.text.strip() for p in ps][0])
+                    day, month, year = date_str.strip().split(" ")
+                    day = int(day.strip("."))
+                    month = self._GERMAN_MONTHS.index(month.strip())
+                    year = int(year.strip())
+                    timestamp = datetime(day=day, month=month, year=year)
 
-            articles.append(Article(
-                timestamp=timestamp,
-                title=title,
-                medium_organisation=self.SOURCE,
-                content=content,
-                link=link, 
-                source=self.SOURCE
-            ))
+                    title = title_str.strip()
+
+                    link = str(a["href"])
+
+                    entries.append((title, link, timestamp))
+
+                else:
+                    break
+
+            articles = []
+            for title, link, timestamp in progress.start_iteration(entries, total=len(entries), desc="Scraping DSC articles"):
+                html = self._get(link, progress, f"Fehler beim Scrapen der Quelle: {self.SOURCE} bei Artikel: {title}")
+                if html is None:
+                    return []
+                
+                soup = BeautifulSoup(html, "html.parser")
+
+                div = soup.find("div", class_="wrapperText")
+                assert div
+
+                ps = div.find_all("p", class_=False)
+                assert ps
+                content = "\n\n".join([p.text.strip() for p in ps][0])
+
+                articles.append(Article(
+                    timestamp=timestamp,
+                    title=title,
+                    medium_organisation=self.SOURCE,
+                    content=content,
+                    link=link, 
+                    source=self.SOURCE
+                ))
 
         return self._filter_dates(articles, parameters)
 

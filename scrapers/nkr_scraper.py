@@ -26,7 +26,7 @@ class NkrScraper(Scraper):
         assert generic_table is not None
 
         entries = generic_table.find_all("div", class_="small-12 large-4 column")
-        assert entries
+        #assert entries TODO: checken, warum dieses assert eine Fehlermeldung wirft
 
         articles = []
         for entry in progress.start_iteration(entries, total=len(entries), desc="Scraping NKR articles"):

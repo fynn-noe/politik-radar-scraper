@@ -11,6 +11,12 @@ MAX_INT: int = sys.maxsize * 2 + 1
 
 
 def done():
+    col1, col2 = st.columns([1, 40])  
+    with col1:
+        st.image("img/icon-funk.JPG", width=50)
+
+    with col2:
+        st.title("politik.radar Scraper")
     st_autorefresh(interval=MAX_INT, limit=1, key="refresh_off")
 
     progress = st.session_state["progress"]
@@ -55,10 +61,22 @@ def done():
 
     article_accumulator = ArticleAccumulator()
     
-    df, bool_columns = article_accumulator.to_dataframe(filter_result, keywords, True)
+    df, bool_columns, df_keywords = article_accumulator.to_dataframe(filter_result, keywords, True)
     df["select"] = df[bool_columns].any(axis=1).astype(bool)
-    ordered_columns = ["select"] + [col for col in df.columns if col != "select"]
-    df = df[ordered_columns]
+    base_columns = [
+        "select",
+        "timestamp",
+        "medium_organisation",
+        "title",
+        "content",
+        "link",
+        "source"
+    ]
+    df["Stichwörter"] = df_keywords
+
+    other_columns = [col for col in df.columns if col not in base_columns]
+
+    df = df[base_columns + other_columns]
 
     st.write("Ergebnisse")
     edited_df = st.data_editor(
@@ -68,8 +86,8 @@ def done():
         column_config={
             "select": st.column_config.CheckboxColumn("Auswählen"),
             "timestamp": st.column_config.TextColumn("Datum", disabled=True),
-            "title": st.column_config.TextColumn("Titel", disabled=True),
             "medium_organisation": st.column_config.TextColumn("Medium/Organisation", disabled=True),
+            "title": st.column_config.TextColumn("Titel", disabled=True),
             "content": st.column_config.TextColumn("Text", disabled=True),
             "link": st.column_config.LinkColumn("Link", disabled=True),
             "source": st.column_config.TextColumn("Quelle", disabled=True)
@@ -102,7 +120,7 @@ def done():
 
     selected_df = edited_df[edited_df["select"]].drop("select", axis=1)
 
-    options = ["Metadaten", "Match-Ergebnisse"]
+    options = ["Metadaten", "Match-Ergebnisse","Stichwort-Spalte"]
     selection = st.segmented_control(
         "Zu Datei hinzufügen",
         options=options,
@@ -111,6 +129,7 @@ def done():
     )
     add_metadata = options[0] in selection
     add_match_results = options[1] in selection
+    add_keywords = options[2] in selection
 
     serializer = DataframeSerializer()
 
@@ -121,7 +140,8 @@ def done():
                 selected_df, 
                 metadata,
                 add_metadata,
-                add_match_results
+                add_match_results,
+                add_keywords
             ),
             file_name="data.csv",
             mime="text/csv",
@@ -134,7 +154,8 @@ def done():
                 selected_df, 
                 metadata,
                 add_metadata,
-                add_match_results
+                add_match_results,
+                add_keywords
             ),
             file_name="data.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

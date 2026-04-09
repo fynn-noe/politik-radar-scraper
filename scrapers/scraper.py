@@ -1,11 +1,12 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from article import Article
 from typing import Dict, List
 from progress import Progress
+from zoneinfo import ZoneInfo
 
 
 class Scraper(ABC):
@@ -38,9 +39,17 @@ class Scraper(ABC):
         articles: List[Article], 
         parameters: Scraper.Parameters
     ) -> List[Article]:
+        def make_aware(dt, tz):
+            if dt.tzinfo is None:
+                return dt.replace(tzinfo=tz)  
+            return dt.astimezone(tz)  
+        berlin_tz = ZoneInfo("Europe/Berlin")
+
+        start = make_aware(parameters.start_date, berlin_tz)
+        end = make_aware(parameters.end_date, berlin_tz)
         return [
             a for a in articles
-            if parameters.start_date <= a.timestamp <= parameters.end_date
+            if start <= make_aware(a.timestamp,berlin_tz) < end + timedelta(days=1)
         ]
     
     def _content_to_markdown(self, content) -> str:
