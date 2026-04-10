@@ -8,10 +8,6 @@ import feedparser
 def scrape_rss(URL, source, datestring, progress: Progress):
     feed = feedparser.parse(URL)
     articles = []
-<<<<<<< HEAD
-    # print(feed)
-=======
->>>>>>> ef1263b (Changed source selection ui)
     if feed and hasattr(feed, "entries"):
         for entry in progress.start_iteration(
             feed.entries, len(feed.entries), f"Scraping {source}..."
