@@ -43,6 +43,9 @@ from scrapers.aa_scraper import AaScraper
 from scrapers.netzpolitik_rss_scraper import NetzpolitikRssScraper
 from scrapers.heise_rss_scraper import HeiseRssScraper
 from scrapers.eu_parlament_rss_scraper import EuParlamentRssScraper
+from scrapers.data_europa_scraper import DataEuropaScraper
+from scrapers.eu_digital_strategy_scraper import EuDigitalStrategy
+from scrapers.eu_kommission_scraper import EuKommissionScraper
 
 
 
@@ -76,6 +79,9 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "Netzpolitik": NetzpolitikRssScraper(),
     "Heise": HeiseRssScraper(),
     "EU Parlament": EuParlamentRssScraper(),
+    "Data.Europa" : DataEuropaScraper(),
+    "EU Digital Strategy":EuDigitalStrategy(),
+    "EU Kommission":EuKommissionScraper(),
 }
 
 BUNDESMINISTERIEN = [
@@ -94,13 +100,14 @@ BUNDESMINISTERIEN = [
     "BMLEH",
     "BMZ",
     "BMWSB",
-    "AA"
+    "AA",
+    "BREG",
 ]
 
 PRESSEORGANE = [
     "Google News",
     "Netzpolitik",
-    "Heise"
+    "Heise",
 ]
 
 SONSTIGE_INSTUTIONEN = [
@@ -109,14 +116,16 @@ SONSTIGE_INSTUTIONEN = [
     "DSC",
     "BSI",
     "BNA",
-    "DIW"
+    "DIW",
 ]
 
 BUNDESTAG= [
     "Heute im Bundestag",
-    "BREG"
 ]
 
 EUROPA_INTERNATIONAL = [
-    "EU Parlament"
+    "EU Parlament",
+    "Data.Europa",
+    "EU Digital Strategy",
+    "EU Kommission",
 ]
