@@ -23,7 +23,7 @@ WEEK: int = 7  # days
 
 @st.cache_data
 def get_keywords() -> List[str]:
-    with open(KEYWORDS_FILENAME, "r") as file:
+    with open(KEYWORDS_FILENAME, "r", encoding="utf-8") as file:
         keyword_data = json.load(file)
     all_keywords = []
     for keywords in keyword_data["topics"].values():
