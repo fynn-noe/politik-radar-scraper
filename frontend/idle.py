@@ -172,7 +172,8 @@ def idle():
        bundestag_selection = source_select(BUNDESTAG,"Bundestag")
     with source_col5:
        europa_international_selection = source_select(EUROPA_INTERNATIONAL,"Europa/international")
-    source_selection = bundesministerien_selection + presseorgane_selection + sonstiges_selection + bundestag_selection + europa_international_selection
+    source_selection = bundesministerien_selection + presseorgane_selection + \
+        sonstiges_selection + bundestag_selection + europa_international_selection
     
     selected_scrapers = [ALL_SCRAPERS[s] for s in source_selection]
 
