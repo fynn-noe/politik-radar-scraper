@@ -15,6 +15,7 @@ from matching.matcher import (
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 from matching.match_filter import MatchFilter
 import traceback
+from bs4 import BeautifulSoup
 
 
 KEYWORDS_FILENAME: str = "keywords.json"
@@ -138,6 +139,7 @@ def source_select(options,name):
                                            options,
                                            key=f"{name}_multiselect2")
     return selection
+
 def idle():
     col1, col2 = st.columns([1, 40])
     with col1:
@@ -172,6 +174,13 @@ def idle():
        bundestag_selection = source_select(BUNDESTAG,"Bundestag")
     with source_col5:
        europa_international_selection = source_select(EUROPA_INTERNATIONAL,"Europa/international")
+    
+    uploaded_files = st.file_uploader(
+        "Tagesspiegel Background hochladen", accept_multiple_files=True, type=["html", "htm"]
+    )
+    st.session_state["uploaded_files"] = uploaded_files
+
+
     source_selection = bundesministerien_selection + presseorgane_selection + \
         sonstiges_selection + bundestag_selection + europa_international_selection
     

@@ -46,6 +46,7 @@ from scrapers.eu_parlament_rss_scraper import EuParlamentRssScraper
 from scrapers.data_europa_scraper import DataEuropaScraper
 from scrapers.eu_digital_strategy_scraper import EuDigitalStrategy
 from scrapers.eu_kommission_scraper import EuKommissionScraper
+from scrapers.tagesspiegel_background_scraper import TagesspiegelBackgroundScraper
 
 
 
@@ -82,6 +83,7 @@ ALL_SCRAPERS: Dict[str, Scraper] = {
     "Data.Europa" : DataEuropaScraper(),
     "EU Digital Strategy":EuDigitalStrategy(),
     "EU Kommission":EuKommissionScraper(),
+    "Tagesspiegel Background":TagesspiegelBackgroundScraper(),
 }
 
 BUNDESMINISTERIEN = [
@@ -108,6 +110,7 @@ PRESSEORGANE = [
     "Google News",
     "Netzpolitik",
     "Heise",
+    "Tagesspiegel Background",
 ]
 
 SONSTIGE_INSTUTIONEN = [
