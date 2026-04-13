@@ -32,7 +32,10 @@ class DataframeSerializer:
         df_ = df.copy()
 
         cols = self.NO_RESULT_COLUMNS.copy()
-
+        # Paywall is "ja" if link is empty and empty otherwise
+        cols.append("Paywall")
+        df_["Paywall"] = df_["link"].isna() | (df_["link"] == "")
+        df_["Paywall"] = df_["Paywall"].map({True: "ja", False: ""})
         if add_results:
             result_cols = [col for col in df_.columns if col not in self.NO_RESULT_COLUMNS and col != "Stichwörter"]
             cols.extend(result_cols)
@@ -57,7 +60,10 @@ class DataframeSerializer:
     def to_xlsx(self, df: pd.DataFrame , metadata: Metadata, add_metadata: bool, add_results: bool, add_keywords: bool) -> bytes:
         df_ = df.copy()
         cols = self.NO_RESULT_COLUMNS.copy()
-
+        # Paywall is "ja" if link is empty and empty otherwise
+        cols.append("Paywall")
+        df_["Paywall"] = df_["link"].isna() | (df_["link"] == "")
+        df_["Paywall"] = df_["Paywall"].map({True: "ja", False: ""})
         if add_results:
             result_cols = [col for col in df_.columns if col not in self.NO_RESULT_COLUMNS and col != "Stichwörter"]
             cols.extend(result_cols)
