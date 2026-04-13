@@ -12,7 +12,7 @@ import html as HTML
 
 class DataEuropaScraper(Scraper):
 
-    SOURCE: str = "Data Europa"
+    SOURCE: str = "Data.Europa"
 
     @dataclass
     class Parameters(Scraper.Parameters):

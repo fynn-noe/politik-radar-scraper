@@ -9,7 +9,7 @@ import streamlit as st
 
 class TagesspiegelBackgroundScraper(Scraper):
 
-    SOURCE: str = "Tagesspiegel background"
+    SOURCE: str = "Tagesspiegel Background"
 
     @dataclass
     class Parameters(Scraper.Parameters):

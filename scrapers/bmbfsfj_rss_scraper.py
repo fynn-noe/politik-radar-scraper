@@ -8,7 +8,7 @@ from scrapers.scrape_rss import scrape_rss
 
 class BmbfsfjRssScraper(Scraper):
 
-    SOURCE: str = "BmbfsfjS"
+    SOURCE: str = "BMBFSFJ"
 
     @dataclass
     class Parameters(Scraper.Parameters):
